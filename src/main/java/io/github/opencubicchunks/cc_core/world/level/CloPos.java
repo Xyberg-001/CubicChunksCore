@@ -15,7 +15,7 @@ import io.github.opencubicchunks.cc_core.utils.Coords;
 /**
  * A representation of the position of either a Chunk or a Cube.
  * <br><br>
- * When packed as a long, chunk positions are encoded the same as {@link MCChunkPos#toLong}; cube positions are encoded the same as {@link CubePos#asLong}: packed with 21 bits per axis.
+ * When packed as a long, chunk positions are encoded the same as {@link MCChunkPos#pack}; cube positions are encoded the same as {@link CubePos#asLong}: packed with 21 bits per axis.
  * The parity of the top two bits of the long is used to distinguish between chunks and cubes (if bit 0 XOR bit 1, it is a cube, otherwise it is a chunk).
  * <br>
  * Also note that for cubes the top two bits (the parity bit, and the top bit of the Z coordinate) are inverted, as otherwise {@link Long#MAX_VALUE} would be a valid position (-1, -1, -1).
@@ -50,8 +50,8 @@ public class CloPos {
     }
 
     private CloPos(MCChunkPos columnPos) {
-        this.x = columnPos.x;
-        this.z = columnPos.z;
+        this.x = columnPos.x();
+        this.z = columnPos.z();
         this.y = CLO_Y_COLUMN_INDICATOR;
     }
 
@@ -169,7 +169,7 @@ public class CloPos {
     }
 
     public static long chunkAsLong(int x, int z) {
-        return MCChunkPos.asLong(x, z);
+        return MCChunkPos.pack(x, z);
     }
 
     private static int extractCubeX(long packed) {
@@ -205,7 +205,7 @@ public class CloPos {
 
     public static long setX(long packed, int x) {
         if (isChunk(packed)) {
-            return MCChunkPos.asLong(x, MCChunkPos.getZ(packed));
+            return MCChunkPos.pack(x, MCChunkPos.getZ(packed));
         }
         //noinspection PointlessBitwiseExpression: yes intellij, it *is* equivalent to "-(1L << 21)" but it's also not as obvious
         packed &= ~((1L << 21) - 1);
@@ -222,7 +222,7 @@ public class CloPos {
 
     public static long setZ(long packed, int z) {
         if (isChunk(packed)) {
-            return MCChunkPos.asLong(MCChunkPos.getX(packed), z);
+            return MCChunkPos.pack(MCChunkPos.getX(packed), z);
         }
         // mask is one bit larger (22 instead of 21) to also reset the parity bit
         packed &= ~(((1L << 22) - 1) << 42);

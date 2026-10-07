@@ -102,7 +102,15 @@ public class CubePos extends MCVec3i {
     }
 
     public static long asChunkPosLong(long cubePosIn, int localX, int localZ) {
-        return MCChunkPos.asLong(Coords.cubeToSection(CubePos.extractX(cubePosIn), localX), Coords.cubeToSection(CubePos.extractZ(cubePosIn), localZ));
+        return MCChunkPos.pack(Coords.cubeToSection(CubePos.extractX(cubePosIn), localX), Coords.cubeToSection(CubePos.extractZ(cubePosIn), localZ));
+    }
+
+    /**
+     * The cubic counterpart of 26.3's ChunkPos.isValid(): whether this cube lies inside the coordinate range a packed cube position can hold.
+     */
+    @UsedFromASM
+    public boolean isValid() {
+        return Math.max(Math.abs(this.getX()), Math.max(Math.abs(this.getY()), Math.abs(this.getZ()))) <= MAX_COORDINATE_VALUE;
     }
 
     public MCChunkPos asChunkPos() {
@@ -122,7 +130,7 @@ public class CubePos extends MCVec3i {
     }
 
     public static CubePos from(MCChunkPos position, int yPos) {
-        return new CubePos(sectionToCube(position.x), yPos, sectionToCube(position.z));
+        return new CubePos(sectionToCube(position.x()), yPos, sectionToCube(position.z()));
     }
 
     public static CubePos from(MCSectionPos sectionPos) {

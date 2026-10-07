@@ -4,19 +4,22 @@ import io.github.opencubicchunks.javaheaders.api.Header;
 
 @Header
 public class MCChunkPos {
-    public final int x, z;
+    // 26.3: ChunkPos is a record (x(), z()), packed with pack()/unpack() instead of toLong()/asLong()/new ChunkPos(long)
     public MCChunkPos(int x, int z) {
         throw new IllegalStateException("Per-version doesn't overwrite method");
     }
 
-    public MCChunkPos(long packedPos) {
-        throw new IllegalStateException("Per-version doesn't overwrite method");
-    }
+    public native int x();
 
-    public native long toLong();
+    public native int z();
 
-    public native static long asLong(int x, int z);
+    public native long pack();
+
+    public native static long pack(int x, int z);
+
+    public native static MCChunkPos unpack(long packedPos);
 
     public native static int getX(long chunkAsLong);
+
     public native static int getZ(long chunkAsLong);
 }
