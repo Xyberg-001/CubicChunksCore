@@ -77,7 +77,6 @@ repositories {
     maven {
         url 'https://repo.spongepowered.org/maven/'
     }
-    jcenter()
     maven {
         name = "ParchmentMC"
         url = "https://maven.parchmentmc.net/"
