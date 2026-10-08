@@ -156,6 +156,27 @@ public class CloPos {
         }
     }
 
+    /**
+     * Squared distance to another clo, counted in sections so that cubes and chunk columns compare: horizontally between any two (a cube from
+     * its lowest corner section), vertically only between two cubes, as a column has no height. Minecraft's ChunkPos.distanceSquared orders
+     * chunks to send to a player nearest first; this does the same for clos. Saturates at Integer.MAX_VALUE.
+     */
+    public int distanceSquared(long other) {
+        boolean otherIsCube = isCube(other);
+        long dx = sectionCoord(this.x, isCube()) - sectionCoord(extractX(other), otherIsCube);
+        long dz = sectionCoord(this.z, isCube()) - sectionCoord(extractZ(other), otherIsCube);
+        long dy = isCube() && otherIsCube ? (long) (this.y - extractY(other)) * CubicConstants.DIAMETER_IN_SECTIONS : 0;
+        return (int) Math.min(Integer.MAX_VALUE, dx * dx + dy * dy + dz * dz);
+    }
+
+    public int distanceSquared(CloPos other) {
+        return this.distanceSquared(other.asLong());
+    }
+
+    private static long sectionCoord(int coord, boolean cube) {
+        return cube ? (long) coord * CubicConstants.DIAMETER_IN_SECTIONS : coord;
+    }
+
     public static long cubeAsLong(int x, int y, int z) {
         long i = 0L;
         i |= ((long) x & (1 << 21) - 1);
